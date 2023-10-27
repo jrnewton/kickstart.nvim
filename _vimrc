@@ -24,9 +24,7 @@ set nowrap
 set nobackup
 set nocursorline
 set nospell
-" set tw=72
-" let mapleader=","
-colo default
+let mapleader="\\"
 " Make sure nothing is after <CR> or mapping will be messed up.
 " wrap
 nnoremap <silent> <Leader>w :set wrap!<CR>
