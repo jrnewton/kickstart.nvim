@@ -15,6 +15,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   'tpope/vim-fugitive',
+  'equalsraf/neovim-gui-shim',
 
   {
     'nvim-telescope/telescope.nvim', tag = '0.1.4',
@@ -139,8 +140,6 @@ require('lazy').setup({
 
 }, {})
 
-vim.keymap.set('n', '<leader>g', '<cmd>:Git<cr>')
-
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -153,6 +152,9 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 require("telescope").setup()
+
+vim.keymap.set('n', '<leader>g', '<cmd>:Git<cr>')
+vim.keymap.set('n', '<leader>t', '<cmd>:Telescope<cr>')
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
