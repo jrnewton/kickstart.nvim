@@ -1,6 +1,5 @@
-set mouse=
-" GuiFont FiraMono:h12
+"set mouse=a
 GuiTabline 0
-GuiPopupmenu 0
+GuiPopupmenu 1
 GuiScrollBar 0
-" GuiRenderLigatures 1
+GuiRenderLigatures 0
