@@ -28,23 +28,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  'equalsraf/neovim-gui-shim',
-  'tpope/vim-fugitive',
-  'mfussenegger/nvim-dap',
-  'rcarriga/nvim-dap-ui',
-  'theHamsta/nvim-dap-virtual-text',
-  'nvim-telescope/telescope-dap.nvim',
-
-  {
-    'nvim-telescope/telescope.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim' }
-  },
-
-  -- needed for telescope
-  {
-    'nvim-treesitter/nvim-treesitter', 
-    build = ':TSUpdate'
-  },
 
   {
     'lewis6991/gitsigns.nvim',
@@ -60,19 +43,7 @@ require('lazy').setup({
     },
   },
 
-  -- others tried:
-  -- tundra: too minimal
-  -- tokyodark: meh
-  --{
-  --  'navarasu/onedark.nvim',
-  --  priority = 1000,
-  --  config = function()
-  --    vim.cmd.colorscheme 'onedark'
-  --  end,
-  --},
   { "ramojus/mellifluous.nvim", name = "mellifluous", priority = 1000 },
-
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
 
   {
     -- Set lualine as statusline
@@ -110,11 +81,6 @@ require("mellifluous").setup(
 })
 vim.cmd.colorscheme "mellifluous"
 
--- require("catppuccin").setup({
---   flavour = "Frappe"
--- })
--- vim.cmd.colorscheme "catppuccin"
-
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -125,39 +91,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
-
-require('telescope').setup()
--- require('telescope').load_extension('dap')
-
-require('nvim-dap-virtual-text').setup()
-
-vim.keymap.set('n', '<leader>g', '<cmd>:Git<cr>')
-vim.keymap.set('n', '<leader>t', '<cmd>:Telescope<cr>')
-
--- DAP
-vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
-vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
-vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
-vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
-vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
-vim.keymap.set('n', '<Leader>B', function() require('dap').set_breakpoint() end)
-vim.keymap.set('n', '<Leader>lp', function() require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
-vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
-vim.keymap.set('n', '<Leader>dl', function() require('dap').run_last() end)
-vim.keymap.set({'n', 'v'}, '<Leader>dh', function()
-  require('dap.ui.widgets').hover()
-end)
-vim.keymap.set({'n', 'v'}, '<Leader>dp', function()
-  require('dap.ui.widgets').preview()
-end)
-vim.keymap.set('n', '<Leader>df', function()
-  local widgets = require('dap.ui.widgets')
-  widgets.centered_float(widgets.frames)
-end)
-vim.keymap.set('n', '<Leader>ds', function()
-  local widgets = require('dap.ui.widgets')
-  widgets.centered_float(widgets.scopes)
-end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
