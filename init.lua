@@ -1,8 +1,7 @@
--- make sure your console font is MesloLGS NF else the gutter does not show 
+-- make sure your console font is MesloLGS NF else the gutter does not show
 -- up and Gitsigns stops working.
 
 vim.cmd([[source C:/Users/JonNewton/AppData/Local/nvim/_vimrc]])
-vim.cmd([[source C:/Users/JonNewton/AppData/Local/nvim/_other]])
 
 -- From primeagen
 -- center page up/down
@@ -28,7 +27,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-
   {
     'lewis6991/gitsigns.nvim',
     opts = {
