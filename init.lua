@@ -30,27 +30,27 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
 
   -- these are all lsp-zero items
-  {'VonHeikemen/lsp-zero.nvim', branch = 'v3.x'},
-  {'neovim/nvim-lspconfig'},
-  {'hrsh7th/cmp-nvim-lsp'},
-  {'hrsh7th/nvim-cmp'},
-  {'L3MON4D3/LuaSnip'},
+  { 'VonHeikemen/lsp-zero.nvim', branch = 'v3.x' },
+  { 'neovim/nvim-lspconfig' },
+  { 'hrsh7th/cmp-nvim-lsp' },
+  { 'hrsh7th/nvim-cmp' },
+  { 'L3MON4D3/LuaSnip' },
 
- -- {
- --   'lewis6991/gitsigns.nvim',
- --   opts = {
- --     signs = {
- --       add          = { text = '+' },
- --       change       = { text = '│' },
- --       delete       = { text = '-' },
- --       topdelete    = { text = '‾' },
- --       changedelete = { text = '~' },
- --       untracked    = { text = '┆' },
- --     }
- --   },
- -- },
+  -- {
+  --   'lewis6991/gitsigns.nvim',
+  --   opts = {
+  --     signs = {
+  --       add          = { text = '+' },
+  --       change       = { text = '│' },
+  --       delete       = { text = '-' },
+  --       topdelete    = { text = '‾' },
+  --       changedelete = { text = '~' },
+  --       untracked    = { text = '┆' },
+  --     }
+  --   },
+  -- },
 
-  { "ramojus/mellifluous.nvim", name = "mellifluous", priority = 1000 },
+  { "ramojus/mellifluous.nvim",  name = "mellifluous", priority = 1000 },
 
   {
     -- Set lualine as statusline
@@ -69,35 +69,59 @@ require('lazy').setup({
 }, {})
 
 require("mellifluous").setup(
-{
-  color_set = 'mellifluous',
-  mellifluous = {
-    color_overrides = {
-      dark = {
-        -- hl.set('IncSearch', { bg = colors.other_keywords, fg = colors.bg }) -- 'incsearch' highlighting; also used for the text replaced with ':s///c'
-        -- Also controls highlight yank feature
-        -- other_keywords = '#772828', -- '#2a2d15',
+  {
+    color_set = 'mellifluous',
+    mellifluous = {
+      color_overrides = {
+        dark = {
+          -- hl.set('IncSearch', { bg = colors.other_keywords, fg = colors.bg }) -- 'incsearch' highlighting; also used for the text replaced with ':s///c'
+          -- Also controls highlight yank feature
+          -- other_keywords = '#772828', -- '#2a2d15',
 
-        -- hl.set('Search', { bg = colors.bg4, fg = colors.fg }) -- Last search pattern highlighting (see 'hlsearch'). Also used for similar items that need to stand out.
-         bg4 = '#772828', --82a2d15',
-      }
-    },
-    neutral = true,
-    bg_contrast = 'hard'
-  }
-})
+          -- hl.set('Search', { bg = colors.bg4, fg = colors.fg }) -- Last search pattern highlighting (see 'hlsearch'). Also used for similar items that need to stand out.
+          bg4 = '#772828', --82a2d15',
+        }
+      },
+      neutral = true,
+      bg_contrast = 'hard'
+    }
+  })
 vim.cmd.colorscheme "mellifluous"
 
 local lsp_zero = require("lsp-zero")
+
+-- only enable keymaps when lsp is active for buffer
 lsp_zero.on_attach(function(client, bufnr)
   -- see :help lsp-zero-keybindings
   -- to learn the available actions
   lsp_zero.default_keymaps({
     buffer = bufnr,
+    -- overwrite existing mappings
     preserve_mappings = false
   })
 end)
-require('lspconfig').lua_ls.setup({})
+
+-- https://www.reddit.com/r/neovim/comments/14kngoa/editing_initlua_with_lua_ls_on_gives_undefined/
+require('lspconfig').lua_ls.setup({
+  settings = {
+    -- Lua MUST be Camel case
+    Lua = {
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = { 'vim' }
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+    }
+  }
+})
+
+require('lspconfig').powershell_es.setup({
+  bundle_path = 'C:/tools/lsp/PowerShellEditorServices',
+  shell = 'powershell.exe'
+})
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
