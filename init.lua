@@ -123,6 +123,17 @@ require('lspconfig').powershell_es.setup({
   shell = 'powershell.exe'
 })
 
+-- deno LSP configuration
+
+-- To appropriately highlight codefences returned from denols, you will need to augment vim.g.markdown_fenced languages in your init.lua
+vim.g.markdown_fenced_languages = {
+  "ts=typescript"
+}
+
+require('lspconfig').denols.setup({})
+
+require('lspconfig').rust_analyzer.setup({})
+
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
