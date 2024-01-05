@@ -2,6 +2,7 @@
 -- up and Gitsigns stops working.
 
 vim.cmd([[source C:/Users/JonNewton/AppData/Local/nvim/_vimrc]])
+vim.g.python3_host_prog = "C:/Users/JonNewton/AppData/Local/Programs/Python/Python311/python3.exe"
 
 -- From primeagen
 -- center page up/down
@@ -27,19 +28,27 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  {
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add          = { text = '+' },
-        change       = { text = '│' },
-        delete       = { text = '-' },
-        topdelete    = { text = '‾' },
-        changedelete = { text = '~' },
-        untracked    = { text = '┆' },
-      }
-    },
-  },
+
+  -- these are all lsp-zero items
+  {'VonHeikemen/lsp-zero.nvim', branch = 'v3.x'},
+  {'neovim/nvim-lspconfig'},
+  {'hrsh7th/cmp-nvim-lsp'},
+  {'hrsh7th/nvim-cmp'},
+  {'L3MON4D3/LuaSnip'},
+
+ -- {
+ --   'lewis6991/gitsigns.nvim',
+ --   opts = {
+ --     signs = {
+ --       add          = { text = '+' },
+ --       change       = { text = '│' },
+ --       delete       = { text = '-' },
+ --       topdelete    = { text = '‾' },
+ --       changedelete = { text = '~' },
+ --       untracked    = { text = '┆' },
+ --     }
+ --   },
+ -- },
 
   { "ramojus/mellifluous.nvim", name = "mellifluous", priority = 1000 },
 
@@ -78,6 +87,17 @@ require("mellifluous").setup(
   }
 })
 vim.cmd.colorscheme "mellifluous"
+
+local lsp_zero = require("lsp-zero")
+lsp_zero.on_attach(function(client, bufnr)
+  -- see :help lsp-zero-keybindings
+  -- to learn the available actions
+  lsp_zero.default_keymaps({
+    buffer = bufnr,
+    preserve_mappings = false
+  })
+end)
+require('lspconfig').lua_ls.setup({})
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
