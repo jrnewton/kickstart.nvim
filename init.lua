@@ -101,6 +101,7 @@ lsp_zero.on_attach(function(client, bufnr)
   })
 end)
 
+--[[  Use workspace specific fix instead, https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/tutorial.md#configure-lua-language-server
 -- https://www.reddit.com/r/neovim/comments/14kngoa/editing_initlua_with_lua_ls_on_gives_undefined/
 require('lspconfig').lua_ls.setup({
   settings = {
@@ -117,6 +118,7 @@ require('lspconfig').lua_ls.setup({
     }
   }
 })
+--]]
 
 require('lspconfig').powershell_es.setup({
   bundle_path = 'C:/tools/lsp/PowerShellEditorServices',
@@ -133,6 +135,8 @@ vim.g.markdown_fenced_languages = {
 require('lspconfig').denols.setup({})
 
 require('lspconfig').rust_analyzer.setup({})
+
+require('lspconfig').gopls.setup({})
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
