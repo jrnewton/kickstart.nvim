@@ -1,10 +1,11 @@
--- make sure your console font is MesloLGS NF else the gutter does not show
--- up and Gitsigns stops working.
+-- I use a console font of "MesloLGS NF" for clink-flex-prompt and it was 
+-- also required for Gitsigns to work.
 
+-------- Original vim config
 vim.cmd([[source C:/Users/JonNewton/AppData/Local/nvim/_vimrc]])
 vim.g.python3_host_prog = "C:/Users/JonNewton/AppData/Local/Programs/Python/Python311/python3.exe"
 
--- From primeagen
+-------- From primeagen 
 -- center page up/down
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
@@ -14,6 +15,20 @@ vim.keymap.set("x", "<space>p", [["_dP]])
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
+-------- Random stuff
+-- [[ Highlight on yank ]]
+-- See `:help vim.highlight.on_yank()`
+local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
+vim.api.nvim_create_autocmd('TextYankPost', {
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+  group = highlight_group,
+  pattern = '*',
+})
+
+-------- Lazy vim plugins
+-- auto install lazy
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -28,29 +43,28 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+  {
+    "folke/trouble.nvim",
+    opts = {
+      icons = false
+    }
+  },
 
-  -- these are all lsp-zero items
-  { 'VonHeikemen/lsp-zero.nvim', branch = 'v3.x' },
-  { 'neovim/nvim-lspconfig' },
-  { 'hrsh7th/cmp-nvim-lsp' },
-  { 'hrsh7th/nvim-cmp' },
-  { 'L3MON4D3/LuaSnip' },
+  {
+    'VonHeikemen/lsp-zero.nvim',
+    branch = 'v3.x',
+    dependencies = {
+      'neovim/nvim-lspconfig',
+      'hrsh7th/cmp-nvim-lsp',
+      {
+        'hrsh7th/nvim-cmp',
+        dependencies =
+        { 'L3MON4D3/LuaSnip' }
+      },
+    }
+  },
 
-  -- {
-  --   'lewis6991/gitsigns.nvim',
-  --   opts = {
-  --     signs = {
-  --       add          = { text = '+' },
-  --       change       = { text = '│' },
-  --       delete       = { text = '-' },
-  --       topdelete    = { text = '‾' },
-  --       changedelete = { text = '~' },
-  --       untracked    = { text = '┆' },
-  --     }
-  --   },
-  -- },
-
-  { "ramojus/mellifluous.nvim",  name = "mellifluous", priority = 1000 },
+  { "ramojus/mellifluous.nvim", name = "mellifluous", priority = 1000 },
 
   {
     -- Set lualine as statusline
@@ -68,6 +82,7 @@ require('lazy').setup({
 
 }, {})
 
+-------- Color scheme
 require("mellifluous").setup(
   {
     color_set = 'mellifluous',
@@ -88,10 +103,11 @@ require("mellifluous").setup(
   })
 vim.cmd.colorscheme "mellifluous"
 
+-------- Language server config
 local lsp_zero = require("lsp-zero")
 
 -- only enable keymaps when lsp is active for buffer
-lsp_zero.on_attach(function(client, bufnr)
+lsp_zero.on_attach(function(_, bufnr)
   -- see :help lsp-zero-keybindings
   -- to learn the available actions
   lsp_zero.default_keymaps({
@@ -101,24 +117,7 @@ lsp_zero.on_attach(function(client, bufnr)
   })
 end)
 
---[[  Use workspace specific fix instead, https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/tutorial.md#configure-lua-language-server
--- https://www.reddit.com/r/neovim/comments/14kngoa/editing_initlua_with_lua_ls_on_gives_undefined/
-require('lspconfig').lua_ls.setup({
-  settings = {
-    -- Lua MUST be Camel case
-    Lua = {
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = { 'vim' }
-      },
-      workspace = {
-        -- Make the server aware of Neovim runtime files
-        library = vim.api.nvim_get_runtime_file("", true),
-      },
-    }
-  }
-})
---]]
+require('lspconfig').lua_ls.setup({})
 
 require('lspconfig').powershell_es.setup({
   bundle_path = 'C:/tools/lsp/PowerShellEditorServices',
@@ -126,28 +125,20 @@ require('lspconfig').powershell_es.setup({
 })
 
 -- deno LSP configuration
-
 -- To appropriately highlight codefences returned from denols, you will need to augment vim.g.markdown_fenced languages in your init.lua
 vim.g.markdown_fenced_languages = {
   "ts=typescript"
 }
-
 require('lspconfig').denols.setup({})
 
 require('lspconfig').rust_analyzer.setup({})
 
 require('lspconfig').gopls.setup({})
 
--- [[ Highlight on yank ]]
--- See `:help vim.highlight.on_yank()`
-local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
-vim.api.nvim_create_autocmd('TextYankPost', {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-  group = highlight_group,
-  pattern = '*',
-})
+require('lspconfig').gopls.setup({})
+
+-------- Trouble config, to show LSP and other messages.
+vim.keymap.set("n", "<leader>t", function() require("trouble").toggle() end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
