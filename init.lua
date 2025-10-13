@@ -83,6 +83,75 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 --   
 --   }, {})
 
+-------- LSP Configuration (using built-in package manager)
+-- Configure diagnostic display
+vim.diagnostic.config({
+  virtual_text = {
+    spacing = 4,
+    prefix = '●',
+  },
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = "E",
+      [vim.diagnostic.severity.WARN] = "W",
+      [vim.diagnostic.severity.HINT] = "H",
+      [vim.diagnostic.severity.INFO] = "I",
+    },
+  },
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+})
+
+-- Set up keybindings when LSP attaches to a buffer
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    -- Buffer local mappings
+    local opts = { buffer = ev.buf }
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
+    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
+    vim.keymap.set('n', '<space>wl', function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, opts)
+    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
+    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
+    vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+    vim.keymap.set('n', '<space>f', function()
+      vim.lsp.buf.format { async = true }
+    end, opts)
+  end,
+})
+
+-- Configure PowerShell LSP using Neovim 0.11+ native API
+local temp_dir = vim.fn.stdpath('cache')
+vim.lsp.config.powershell_es = {
+  cmd = {
+    'pwsh',
+    '-NoLogo',
+    '-NoProfile',
+    '-Command',
+    string.format(
+      [[& '%s' -HostName nvim -HostProfileId nvim -HostVersion 1.0.0 -BundledModulesPath '%s' -LogPath '%s/powershell_es.log' -SessionDetailsPath '%s/powershell_es_session.json' -LanguageServiceOnly -Stdio]],
+      'C:/tools/lsp/PowerShellEditorServices/PowerShellEditorServices/Start-EditorServices.ps1',
+      'C:/tools/lsp/PowerShellEditorServices',
+      temp_dir,
+      temp_dir
+    )
+  },
+  filetypes = { 'ps1', 'psm1', 'psd1' },
+  root_dir = vim.fs.root(0, { '.git', 'PSScriptRoot' }),
+}
+
+-- Enable the LSP for PowerShell files
+vim.lsp.enable('powershell_es')
+
 -- try out new default scheme
 vim.cmd.colorscheme "habamax"
 
