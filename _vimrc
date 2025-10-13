@@ -14,7 +14,8 @@ set wildmenu
 set number
 "So far I haven't used this as much as I thought...
 "set relativenumber
-set guioptions+=bk " b=enable bottom scroll, k=keep window size
+" removed in 0.11
+" set guioptions+=bk " b=enable bottom scroll, k=keep window size
 set synmaxcol=512 " stop syntax highlight, avoid slow down on long lines
 set statusline=%<%F\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 set laststatus=2 " always show status line
