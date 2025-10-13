@@ -1,19 +1,10 @@
--- I use a console font of "MesloLGS NF" for clink-flex-prompt and it was 
+-- I use a console font of "MesloLGS NF" for clink-flex-prompt and it was
 -- also required for Gitsigns to work.
 
 -------- Original vim config
 vim.cmd([[source C:/Users/JonNewton/AppData/Local/nvim/_vimrc]])
 vim.g.python3_host_prog = "C:/Users/JonNewton/AppData/Local/Programs/Python/Python311/python3.exe"
 
--------- From primeagen 
--- center page up/down
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
-vim.keymap.set("x", "<space>p", [["_dP]])
-
--- center next/prev search match?
-vim.keymap.set("n", "n", "nzzzv")
-vim.keymap.set("n", "N", "Nzzzv")
 
 -------- Random stuff
 -- [[ Highlight on yank ]]
@@ -43,11 +34,37 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+  -- installed to fix https://github.com/nvim-lua/kickstart.nvim/pull/1040
   {
-    "folke/trouble.nvim",
+    'folke/lazydev.nvim',
+    ft = 'lua',
     opts = {
-      icons = false
-    }
+      library = {
+        -- Load luvit types when the `vim.uv` word is found
+        { path = 'luvit-meta/library', words = { 'vim%.uv' } },
+      },
+    },
+  },
+
+  {
+    'Bilal2453/luvit-meta',
+    lazy = true
+  },
+
+  -- end of fix for kickstart.nvim/1040
+
+  {
+    -- Set lualine as statusline
+    'nvim-lualine/lualine.nvim',
+    -- See `:help lualine.txt`
+    opts = {
+      options = {
+        icons_enabled = false,
+        theme = 'onedark',
+        component_separators = '|',
+        section_separators = '',
+      }
+    },
   },
 
   {
@@ -64,44 +81,10 @@ require('lazy').setup({
     }
   },
 
-  { "ramojus/mellifluous.nvim", name = "mellifluous", priority = 1000 },
-
-  {
-    -- Set lualine as statusline
-    'nvim-lualine/lualine.nvim',
-    -- See `:help lualine.txt`
-    opts = {
-      options = {
-        icons_enabled = false,
-        theme = 'onedark',
-        component_separators = '|',
-        section_separators = '',
-      }
-    },
-  },
-
 }, {})
 
--------- Color scheme
-require("mellifluous").setup(
-  {
-    color_set = 'mellifluous',
-    mellifluous = {
-      color_overrides = {
-        dark = {
-          -- hl.set('IncSearch', { bg = colors.other_keywords, fg = colors.bg }) -- 'incsearch' highlighting; also used for the text replaced with ':s///c'
-          -- Also controls highlight yank feature
-          -- other_keywords = '#772828', -- '#2a2d15',
-
-          -- hl.set('Search', { bg = colors.bg4, fg = colors.fg }) -- Last search pattern highlighting (see 'hlsearch'). Also used for similar items that need to stand out.
-          bg4 = '#772828', --82a2d15',
-        }
-      },
-      neutral = true,
-      bg_contrast = 'hard'
-    }
-  })
-vim.cmd.colorscheme "mellifluous"
+-- try out new default scheme
+vim.cmd.colorscheme "habamax"
 
 -------- Language server config
 local lsp_zero = require("lsp-zero")
@@ -126,19 +109,28 @@ require('lspconfig').powershell_es.setup({
 
 -- deno LSP configuration
 -- To appropriately highlight codefences returned from denols, you will need to augment vim.g.markdown_fenced languages in your init.lua
-vim.g.markdown_fenced_languages = {
-  "ts=typescript"
-}
-require('lspconfig').denols.setup({})
-
-require('lspconfig').rust_analyzer.setup({})
+--vim.g.markdown_fenced_languages = {
+--  "ts=typescript"
+--}
+--require('lspconfig').denols.setup({})
+--
+-- require('lspconfig').tsserver.setup({})
+-- 
+-- require('lspconfig').rust_analyzer.setup({})
 
 require('lspconfig').gopls.setup({})
 
-require('lspconfig').gopls.setup({})
+-------- Key mappings
 
--------- Trouble config, to show LSP and other messages.
-vim.keymap.set("n", "<leader>t", function() require("trouble").toggle() end)
+-- From primeagen
+-- center page up/down
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
+vim.keymap.set("x", "<space>p", [["_dP]])
+
+-- center next/prev search match?
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
