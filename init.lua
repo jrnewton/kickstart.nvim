@@ -102,9 +102,9 @@ vim.keymap.set("x", "<space>p", [["_dP]])
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
--- claude hacks to make MD highlighting suck less
--- i tried render-markdown plugin but didn't like how normal mode looked 
--- different than edit mode.
+-- Hacks to make MD highlighting suck less. I tried render-markdown plugin but 
+-- didn't like how normal mode looked different than edit mode.
+-- Claude:
 vim.cmd([[
   highlight markdownBold gui=bold guifg=#ffffff cterm=bold ctermfg=15
   highlight markdownItalic gui=italic cterm=italic
@@ -116,7 +116,43 @@ vim.cmd([[
   highlight markdownH4 gui=bold guifg=#589958 guibg=#1d381d cterm=bold ctermfg=65 ctermbg=22
   highlight markdownH5 gui=bold guifg=#407740 guibg=#132c13 cterm=bold ctermfg=28 ctermbg=233
   highlight markdownH6 gui=bold guifg=#285528 guibg=#0a200a cterm=bold ctermfg=22 ctermbg=232
+  highlight markdownTableHeader gui=bold guifg=#78dce8 guibg=#2d4a5c cterm=bold ctermfg=117 ctermbg=24
 ]])
+
+-- Claude:
+-- Custom highlighting for markdown table headers
+-- Tables use | separators and --- delimiters, which confuse the H2 parser
+vim.api.nvim_create_autocmd({"BufEnter", "BufWritePost", "TextChanged", "TextChangedI"}, {
+  pattern = "*.md",
+  callback = function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local ns_id = vim.api.nvim_create_namespace("markdown_table_headers")
+
+    -- print("DEBUG: Markdown table header detection running")
+
+    -- Clear existing highlights
+    vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+
+    -- Get all lines in buffer
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    -- print("DEBUG: Total lines: " .. #lines)
+
+    for i, line in ipairs(lines) do
+      -- Check if this line contains table separators (|) and next line is dashes
+      if line:match("|") and i < #lines then
+        -- print("DEBUG: Found | on line " .. i .. ": " .. line)
+        local next_line = lines[i + 1]
+        -- print("DEBUG: Next line " .. (i + 1) .. ": " .. next_line)
+        -- Check if next line is a table separator (just dashes, with or without |)
+        if next_line:match("^%s*[-|:]+%s*$") and next_line:match("[-]+") then
+          -- print("DEBUG: Detected table header on line " .. i .. ", applying highlight")
+          -- This is a table header row, apply custom highlight
+          vim.api.nvim_buf_add_highlight(bufnr, ns_id, "markdownTableHeader", i - 1, 0, -1)
+        end
+      end
+    end
+  end,
+})
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
