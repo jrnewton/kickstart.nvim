@@ -3,8 +3,37 @@
 
 -------- Original vim config
 vim.cmd([[source C:/Users/JonNewton/AppData/Local/nvim/_vimrc]])
-vim.g.python3_host_prog = "C:/tools/python314/python.exe"
 
+-------- Indentation / EOL handling (DinoUDM C++ source)
+-- this must come right after sourcing _vimrc
+-- Don't add a final newline on save to files that don't already have one
+vim.opt.fixendofline = false
+
+-- Follow the file's indent style: if tab-indented lines outnumber
+-- space-indented ones, indent with real tabs.
+vim.api.nvim_create_autocmd('BufReadPost', {
+  group = vim.api.nvim_create_augroup('DetectIndent', { clear = true }),
+  pattern = '*',
+  callback = function(ev)
+    local tabs, spaces = 0, 0
+    for _, line in ipairs(vim.api.nvim_buf_get_lines(ev.buf, 0, 2000, false)) do
+      if line:find('^\t') then
+        tabs = tabs + 1
+      elseif line:find('^  +%S') then
+        spaces = spaces + 1
+      end
+    end
+    if tabs > spaces then
+      local bo = vim.bo[ev.buf]
+      bo.expandtab = false
+      bo.tabstop = 4
+      bo.shiftwidth = 0   -- indent commands use tabstop
+      bo.softtabstop = 0
+    end
+  end,
+})
+
+vim.g.python3_host_prog = "C:/tools/python314/python.exe"
 
 -------- Random stuff
 -- [[ Highlight on yank ]]
@@ -82,7 +111,7 @@ vim.lsp.config.powershell_es = {
       temp_dir
     )
   },
-  filetypes = { 'ps1', 'psm1', 'psd1' },
+  filetypes = { 'ps1' },
   root_dir = vim.fs.root(0, { '.git', 'PSScriptRoot' }),
 }
 
